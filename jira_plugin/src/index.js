@@ -29,4 +29,23 @@ resolver.define('fetchIssueData', async (req) => {
   };
 });
 
+// New resolver for GitHub repo connect
+resolver.define('connectGithubRepo', async ({ payload }) => {
+  const { repoUrl, githubToken } = payload;
+
+  // 🚨 In a real app, you'd securely store these
+  console.log(`Received GitHub Repo URL: ${repoUrl}`);
+  console.log(`Received GitHub Token: ${githubToken.slice(0, 4)}...`);
+
+  // Optionally validate the token with GitHub
+  // Example only:
+  // const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+  //   headers: {
+  //     Authorization: `token ${githubToken}`
+  //   }
+  // });
+
+  return { message: 'GitHub repo connected!' };
+});
+
 export const handler = resolver.getDefinitions();
