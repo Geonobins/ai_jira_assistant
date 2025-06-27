@@ -33,19 +33,37 @@ resolver.define('fetchIssueData', async (req) => {
 resolver.define('connectGithubRepo', async ({ payload }) => {
   const { repoUrl, githubToken } = payload;
 
-  // 🚨 In a real app, you'd securely store these
-  console.log(`Received GitHub Repo URL: ${repoUrl}`);
-  console.log(`Received GitHub Token: ${githubToken.slice(0, 4)}...`);
+  try {
+    const response = await fetch('https://7246-103-141-57-14.ngrok-free.app/connect', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ repo_url: repoUrl, github_token: githubToken })
+    });
 
-  // Optionally validate the token with GitHub
-  // Example only:
-  // const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-  //   headers: {
-  //     Authorization: `token ${githubToken}`
-  //   }
-  // });
+    console.log("Responsee",response);
+    const text = await response.text(); // 🔥 Always get text first
 
-  return { message: 'GitHub repo connected!' };
+    if (!response.ok) {
+      let detail;
+      try {
+        const json = JSON.parse(text);
+        detail = json.detail || text;
+      } catch (e) {
+        detail = text; // fallback for non-JSON error body
+      }
+      return { message: `❌ Failed: ${detail}` };
+    }
+
+    const result = JSON.parse(text); // 🧠 Parse only if ok
+    return { message: result.message || '✅ Connected' };
+  } catch (err) {
+    console.error('Backend error:', err);
+    return { message: '❌ Could not reach backend' };
+  }
 });
+
+
 
 export const handler = resolver.getDefinitions();

@@ -41,7 +41,7 @@ function App() {
     setConnectStatus('🔄 Connecting...');
     try {
       const result = await invoke('connectGithubRepo', { repoUrl, githubToken });
-      setConnectStatus(`✅ ${result.message}`);
+      setConnectStatus(` ${result.message}`);
     } catch (error) {
       console.error('GitHub connect error:', error);
       setConnectStatus('❌ Invalid repo or token');
